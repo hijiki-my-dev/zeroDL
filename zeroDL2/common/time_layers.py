@@ -267,12 +267,15 @@ class TimeAffine:
         self.x = None
 
     def forward(self, x):
+        print(f"[TimeAffine.forward] x: {x.shape}")
         N, T, D = x.shape
         W, b = self.params
 
         rx = x.reshape(N*T, -1)
+        print(f"[TimeAffine.forward] rx: {rx.shape}")
         out = np.dot(rx, W) + b
         self.x = x
+        print(f"[TimeAffine.forward] return: {out.reshape(N, T, -1).shape}")
         return out.reshape(N, T, -1)
 
     def backward(self, dout):
@@ -291,6 +294,8 @@ class TimeAffine:
         self.grads[0][...] = dW
         self.grads[1][...] = db
 
+        print(f"[TimeAffine.backward] return dx: {dx.shape}")
+
         return dx
 
 
@@ -301,6 +306,7 @@ class TimeSoftmaxWithLoss:
         self.ignore_label = -1
 
     def forward(self, xs, ts):
+        print(f"[TimeSoftmaxWithLoss] xs: {xs.shape}")
         N, T, V = xs.shape
 
         if ts.ndim == 3:  # 教師ラベルがone-hotベクトルの場合

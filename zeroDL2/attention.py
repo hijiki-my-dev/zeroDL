@@ -13,7 +13,7 @@ class WeightSum:
     def forward(self, hs, a):
         N, T, H = hs.shape
 
-        ar = a.reshape(N, T, 1)
+        ar = a.reshape(N, T, 1).repeat(H, axis=2)
         t = hs*ar
         c = np.sum(t, axis=1)
 
@@ -160,17 +160,21 @@ class AttentionDecoder:
         # print(f"[AttentionDecoder] xs: {xs.shape}, enc_hs: {enc_hs.shape}")
 
         out = self.embed.forward(xs)
-        # print(f"out: {out.shape}")
+        print(f"[AttentionDecoder.forward] out: {out.shape}")
         dec_hs = self.lstm.forward(out)
-        # print(f"dec_hs: {dec_hs.shape} <- この長さが理想の10倍")
+        print(f"[AttentionDecoder.forward] dec_hs: {dec_hs.shape} <- この長さが理想の10倍だった")
         c = self.attention.forward(enc_hs, dec_hs)
+        print(f"[AttentionDecoder.forward] c: {c.shape}")
         out = np.concatenate((c, dec_hs), axis=2)
+        print(f"[AttentionDecoder.forward] out: {out.shape}")
         score = self.affine.forward(out)
+
+        print(f"[AttentionDecoder.forward] score: {score.shape}")
 
         return score
 
     def backward(self, dscore):
-        dout = self.attention.backward(dscore)
+        dout = self.affine.backward(dscore)
         N, T, H2 = dout.shape
         H = H2 // 2
 

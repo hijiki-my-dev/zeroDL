@@ -68,6 +68,7 @@ class Seq2seq(BaseModel):
         self.grads = self.encoder.grads + self.decoder.grads
 
     def forward(self, xs, ts):
+        print(f"[Seq2seq.forward] xs: {xs.shape}, ts: {ts.shape}")
         decoder_xs, decoder_ts = ts[:, :-1], ts[:, 1:]
 
         h = self.encoder.forward(xs)
@@ -77,6 +78,7 @@ class Seq2seq(BaseModel):
 
     def backward(self, dout=1):
         dout = self.softmax.backward(dout)
+        print(f"[Seq2seq] dout: {dout.shape}")
         dh = self.decoder.backward(dout)
         dout = self.encoder.backward(dh)
         return dout
