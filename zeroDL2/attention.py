@@ -39,6 +39,7 @@ class AttentionWeight:
         self.cache = None
 
     def forward(self, hs, h):
+        # print(f"[AttentionWeight] hs: {hs.shape}, h: {h.shape}")
         N, T, H = hs.shape
 
         hr = h.reshape(N, 1, H).repeat(T, axis=1)
@@ -96,7 +97,7 @@ class TimeAttention:
 
         for t in range(T):
             layer = Attention()
-            out[:, t, :] = layer.forward(hs_enc, hs_dec)
+            out[:, t, :] = layer.forward(hs_enc, hs_dec[:, t, :])
             self.layers.append(layer)
             self.attention_weights.append(layer.attention_weight)
 
@@ -104,6 +105,7 @@ class TimeAttention:
 
     def backward(self, dout):
         N, T, H = dout.shape
+        print(f"[TimeAttention.backward] dout: {dout.shape}")
         dhs_enc = 0
         dhs_dec = np.empty_like(dout)
 
@@ -155,8 +157,12 @@ class AttentionDecoder:
         h = enc_hs[:, -1]
         self.lstm.set_state(h)
 
+        # print(f"[AttentionDecoder] xs: {xs.shape}, enc_hs: {enc_hs.shape}")
+
         out = self.embed.forward(xs)
+        # print(f"out: {out.shape}")
         dec_hs = self.lstm.forward(out)
+        # print(f"dec_hs: {dec_hs.shape} <- この長さが理想の10倍")
         c = self.attention.forward(enc_hs, dec_hs)
         out = np.concatenate((c, dec_hs), axis=2)
         score = self.affine.forward(out)
