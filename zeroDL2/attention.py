@@ -105,7 +105,7 @@ class TimeAttention:
 
     def backward(self, dout):
         N, T, H = dout.shape
-        print(f"[TimeAttention.backward] dout: {dout.shape}")
+        # print(f"[TimeAttention.backward] dout: {dout.shape}")
         dhs_enc = 0
         dhs_dec = np.empty_like(dout)
 
@@ -160,16 +160,16 @@ class AttentionDecoder:
         # print(f"[AttentionDecoder] xs: {xs.shape}, enc_hs: {enc_hs.shape}")
 
         out = self.embed.forward(xs)
-        print(f"[AttentionDecoder.forward] out: {out.shape}")
+        # print(f"[AttentionDecoder.forward] out: {out.shape}")
         dec_hs = self.lstm.forward(out)
-        print(f"[AttentionDecoder.forward] dec_hs: {dec_hs.shape} <- この長さが理想の10倍だった")
+        # print(f"[AttentionDecoder.forward] dec_hs: {dec_hs.shape} <- この長さが理想の10倍だった")
         c = self.attention.forward(enc_hs, dec_hs)
-        print(f"[AttentionDecoder.forward] c: {c.shape}")
+        # print(f"[AttentionDecoder.forward] c: {c.shape}")
         out = np.concatenate((c, dec_hs), axis=2)
-        print(f"[AttentionDecoder.forward] out: {out.shape}")
+        # print(f"[AttentionDecoder.forward] out: {out.shape}")
         score = self.affine.forward(out)
 
-        print(f"[AttentionDecoder.forward] score: {score.shape}")
+        # print(f"[AttentionDecoder.forward] score: {score.shape}")
 
         return score
 

@@ -34,8 +34,8 @@ class Trainer:
             for iters in range(max_iters):
                 batch_x = x[iters*batch_size:(iters+1)*batch_size]
                 batch_t = t[iters*batch_size:(iters+1)*batch_size]
-                print(f"[Trainer] batch_x: {batch_x.shape}")
-                print(f"[Trainer] batch_t: {batch_t.shape}")
+                # print(f"[Trainer] batch_x: {batch_x.shape}")
+                # print(f"[Trainer] batch_t: {batch_t.shape}")
 
                 # 勾配を求め、パラメータを更新
                 loss = model.forward(batch_x, batch_t)
